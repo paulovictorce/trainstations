@@ -22,6 +22,11 @@ public class StationController {
         return stationService.save(station);
     }
 
+    @PutMapping("/edit/{id}")
+    public ResponseEntity update(@PathVariable Long id, @RequestBody @Valid Station station) {
+        return stationService.update(id, station);
+    }
+
     @GetMapping
     public ResponseEntity<Page<Station>> getAll(
             @RequestParam(

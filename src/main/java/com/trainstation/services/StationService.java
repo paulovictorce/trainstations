@@ -4,6 +4,7 @@ import com.trainstation.entities.Station;
 import com.trainstation.exceptions.UniqueException;
 import com.trainstation.repositories.StationRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -19,6 +20,12 @@ public class StationService {
 
     private final StationRepository stationRepository;
 
+    private ResponseEntity stationNotFoundedResponse = new ResponseEntity<>("Station not founded!",
+            HttpStatus.NOT_FOUND);
+
+    private ResponseEntity validationStationFieldsFailResponse = new ResponseEntity<>(
+            "The name and service fields must be informed", HttpStatus.BAD_REQUEST);
+
     public ResponseEntity<Page<Station>> getAll(int page, int size) {
 
         PageRequest pageRequest = PageRequest.of(
@@ -32,7 +39,7 @@ public class StationService {
     }
 
     public ResponseEntity<Page<Station>> search(String textToSearch, int page,
-                                      int size) {
+                                                int size) {
         PageRequest pageRequest = PageRequest.of(
                 page,
                 size,
@@ -51,10 +58,47 @@ public class StationService {
             throw new UniqueException("Station name already exists!", "name");
         }
 
+        if (validateStation(station)) {
+            return validationStationFieldsFailResponse;
+        }
+
         return new ResponseEntity<>(stationRepository.save(station), HttpStatus.CREATED);
     }
 
+    public ResponseEntity update(Long stationId, Station station) {
 
+        Optional<Station> stationOptional = stationRepository.findById(stationId);
+
+        if (!stationOptional.isPresent()) {
+            return stationNotFoundedResponse;
+        }
+
+        if (validateStation(station)) {
+            return validationStationFieldsFailResponse;
+        }
+
+
+        Optional<Station> stationOptionalToValidateName = stationRepository.findByNameIgnoreCase(station.getName());
+
+        if (stationOptionalToValidateName.isPresent() &&
+                stationOptionalToValidateName.get().getId() != stationOptional.get().getId()) {
+            throw new UniqueException("Station name already exists!", "name");
+        }
+
+        station.setId(stationOptional.get().getId());
+
+        return new ResponseEntity<>(stationRepository.save(station), HttpStatus.OK);
+    }
+
+    private boolean validateStation(Station station) {
+
+        if (StringUtils.isEmpty(station.getName()) || StringUtils.isEmpty(station.getService())) {
+            return true;
+        }
+
+        return false;
+
+    }
 
 
 }
