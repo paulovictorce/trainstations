@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/stations")
 @RequiredArgsConstructor
@@ -16,7 +18,7 @@ public class StationController {
     private final StationService stationService;
 
     @PostMapping("/save")
-    public ResponseEntity save(@RequestBody Station station) {
+    public ResponseEntity save(@RequestBody @Valid Station station) {
         return stationService.save(station);
     }
 

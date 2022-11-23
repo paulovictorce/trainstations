@@ -12,6 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -22,11 +23,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
             MethodArgumentNotValidException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
 
-        List<String> errors = ex.getBindingResult()
+        Set<String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(x -> x.getDefaultMessage())
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
         ApiErrorMessagesConfig apiErrorMessagesConfig = new ApiErrorMessagesConfig(status, errors);
 

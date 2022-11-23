@@ -16,11 +16,12 @@ public class Station {
     private Long id;
 
     @Column(unique = true)
-    @NotNull(message = "Station name is mandatory!")
+    @NotNull(message = "Station name can't be null!")
+    @NotBlank(message = "Station name can't be blank!")
     @ApiModelProperty(notes = "Station name")
     private String name;
 
-    @NotBlank(message = "Station service is mandatory!")
+    @NotBlank(message = "Station service can't be blank!")
     @ApiModelProperty(notes = "Station services")
     private String service;
 
