@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Data
@@ -13,11 +15,12 @@ public class Station {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 500, unique = true)
+    @Column(unique = true)
+    @NotNull(message = "Station name is mandatory!")
     @ApiModelProperty(notes = "Station name")
     private String name;
 
-    @Column(nullable = false, length = 300)
+    @NotBlank(message = "Station service is mandatory!")
     @ApiModelProperty(notes = "Station services")
     private String service;
 
